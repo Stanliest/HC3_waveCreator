@@ -60,18 +60,18 @@ type Pages
 
 
 init =
-    { page = ShapeCreator
+    { page = SinCreator
     , model1 = ShapeCreator.init
     , model2 = TriCreator.init
     , model3 = PolygonCreator.init
     , model4 = ArcCreator.init
     , model5 = SinCreator.init
     , model6 = TextCreator.init
-    , oneSat = 1
+    , oneSat = 0
     , twoSat = 0
     , threeSat = 0
     , fourSat = 0
-    , fiveSat = 0
+    , fiveSat = 1
     , sixSat = 0
     , currentPage = 1
     }
