@@ -125,6 +125,15 @@ init =
     , maxShift = 2 * Basics.pi
     , cosWaveLength = 200
     , sinWaveLength = 100
+    , hasMoveX = False
+    , hasMoveY = False
+    , hasMoveCircle = False
+    , hasEditableXSin = False
+    , hasScaleX = False
+    , hasScaleY = False
+    , hasScaleU = False
+    , hasMakeTransparent = False
+    , hasURotate = False
     }
 
 
@@ -151,7 +160,7 @@ type Msg m
     | VDilationMinus
     | TrigCycleU
     | TrigCycleV
-    | UTransforms
+    | UTransforms (Float, Float)
     | UTransformsReverse
       --| MoveX
       --| MoveY
@@ -166,6 +175,7 @@ type Msg m
     | BScaleMinus
     | ButtonDown ButtonDir
     | MouseUp
+    | Toggle Transforms
 
 
 type Notifications
@@ -238,7 +248,6 @@ type ButtonDir
     | None
     | VUP
     | VDown
-
 
 update msg model =
     case msg of
@@ -738,11 +747,56 @@ update msg model =
         TrigCycleV ->
             { model | trigCycleV = cycleTrig model.trigCycleV }
 
-        UTransforms ->
-            { model | uTransform = cycleTransforms model.uTransform }
+        UTransforms tap->
+            { model | uTransform = 
+                        if Tuple.second tap > 0 then
+                            ScaleU
+                        else if Tuple.second tap > -20 then
+                            ScaleX
+                        else if Tuple.second tap > -40 then
+                            ScaleY
+                        else if Tuple.second tap > -60 then
+                            MoveX
+                        else if Tuple.second tap > -80 then
+                            MoveY
+                        else if Tuple.second tap > -100 then
+                            MoveCircle
+                        else if Tuple.second tap > -120 then
+                            MakeTransparent
+                        else if Tuple.second tap > -140 then
+                            EditableXSin
+                        else
+                            model.uTransform }
 
         UTransformsReverse ->
             { model | uTransform = cycleTransformsReverse model.uTransform }
+
+        Toggle MoveX ->
+            { model | hasMoveX = not model.hasMoveX }
+
+        Toggle MoveY ->
+            { model | hasMoveY = not model.hasMoveY }
+
+        Toggle URotate ->
+            { model | hasURotate = not model.hasURotate }
+
+        Toggle ScaleU ->
+            { model | hasScaleU = not model.hasScaleU }
+
+        Toggle ScaleX ->
+            { model | hasScaleX = not model.hasScaleX }
+
+        Toggle ScaleY ->
+            { model | hasScaleY = not model.hasScaleY }
+
+        Toggle MakeTransparent ->
+            { model | hasMakeTransparent = not model.hasMakeTransparent }
+
+        Toggle MoveCircle ->
+            { model | hasMoveCircle = not model.hasMoveCircle }
+
+        Toggle EditableXSin ->
+            { model | hasEditableXSin = not model.hasEditableXSin }
 
         {-
            MoveX ->
@@ -1090,7 +1144,7 @@ cosinString model =
     in
     showDigits 2 model.uDilation ++ "*model.time" ++ fraction ++ "*Pi)"
 
-
+-- view ----------------------------------------------------------------------------------------------------------------------------------------
 view model =
     let
         uScale =
@@ -1142,7 +1196,31 @@ view model =
                 , copiable "mySquare" |> move ( 10, -20 )
                 ]
 
-        transformsGraphicsGroup =
+        transformsGraphicsWithButtonGroup model2 =
+            group
+                [ rect 210 200 |> outlined (solid 1) red |> makeTransparent 0.25 |> move ( 25, 60 )
+                , text "Click to apply transforms" |> serif |> italic |> size 10 |> filled titleColour |> move (140, 150)
+                , square 15 |> outlined (solid 1) (rgb model.r model.g model.b) |> applyTransforms model.uTransform model |> move ( 25, 60 )
+                , group <|
+                    List.map2
+                        (\ss y ->
+                            applyTransformsText ss
+                                |> text
+                                |> fixedwidth
+                                |> size 10
+                                |> filled black
+                                |> notifyTapAt UTransforms
+                                |> move ( 170, 130 )
+                                -- |> time4 model ss 140 10
+                                |> move ( -35, y )
+                        )
+                    [ ScaleU, ScaleX, ScaleY, MoveX, MoveY, MoveCircle, MakeTransparent, EditableXSin ]
+                    (List.map (\x -> -20 * Basics.toFloat x) (List.range 0 20))
+                    
+                ]
+
+        {-
+        transformsGraphicsGroup = -- not in use anymore
             group
                 [ rect 210 200 |> outlined (solid 1) red |> makeTransparent 0.25 |> move ( 45, 70 )
                 , square 15 |> outlined (solid 1) (rgb model.r model.g model.b) |> applyTransforms model.uTransform model |> move ( 45, 60 )
@@ -1156,7 +1234,7 @@ view model =
                     |> move ( 30, 50 )
                 ]
 
-        {-
+
            moveGraphicsY =
                group
                    [ rect 120 140 |> outlined (solid 1) red |> makeTransparent 0.25 |> move ( 10, -50 )
@@ -1223,7 +1301,7 @@ view model =
                 , circle 2 |> filled (rgb model.r model.g model.b) |> move ( -50 + model.uScale * notTrigCycleU uArg, 50 + u )
                 ]
 
-        titlesText =
+        titlesText = -- not used
             group
                 [ tt "1. Modify your functions!" |> move ( -50, 175 )
                 , tt "2. Choose a colour!" |> move ( 140, 125 )
@@ -1234,7 +1312,7 @@ view model =
                 ]
 
         cosLabel =
-            text (String.fromFloat model.uScale ++ "* cos(" ++ cosinString model) |> fixedwidth |> size 8 |> filled black |> rotate (degrees 90) |> move ( -110, -82 ) |> notifyTap (TransM (\m -> { m | trigCycleU = Cos }))
+            text (String.fromFloat model.uScale ++ "* cos(" ++ cosinString model) |> fixedwidth |> size 10 |> filled black |> rotate (degrees 90) |> move ( -110, -172 ) |> notifyTap (TransM (\m -> { m | trigCycleU = Cos }))
     in
     [ graphPaperCustom 10 1 (rgb 255 137 5) |> makeTransparent 0.25 -- axes and selected coordinate ticks
     , group
@@ -1246,10 +1324,11 @@ view model =
         , circleGraphics
         ]
         |> move ( -140, 80 )
-    , titlesText |> makeTransparent 0
+    , titlesText |> makeTransparent 0 -- not used
     , cosLabel |> move ( -127, 67 )
-    , transformsGraphicsGroup |> move ( 0, -100 )
-
+    -- , transformsGraphicsGroup |> move ( 0, -100 )
+    , transformsGraphicsWithButtonGroup model |> move ( 0, -100 )
+    , text "SinCreator" |> serif |> size 12 |> filled titleColour |> move (-240, 170)
     --, moveGraphicsX |> move ( 180, 220 )
     --, moveGraphicsY |> move ( 60, 50 )
     , group
@@ -1302,3 +1381,38 @@ copiable str =
 
 copiable2 str =
     str |> text |> selectable |> fixedwidth |> size 9 |> filled black
+
+time4 model t w h shape =
+            if
+                case t of
+                MoveX ->
+                    model.hasMoveX
+
+                MoveY ->
+                    model.hasMoveY
+
+                MoveCircle ->
+                    model.hasMoveCircle
+                
+                EditableXSin ->
+                    model.hasEditableXSin
+
+                URotate ->
+                    model.hasURotate
+
+                ScaleU ->
+                    model.hasScaleU
+
+                ScaleX ->
+                    model.hasScaleX
+
+                ScaleY ->
+                    model.hasScaleY
+
+                MakeTransparent ->
+                    model.hasMakeTransparent
+            then
+                group [ rect w h |> filled (rgba 255 137 5 (0.6 + 0.4 * sin (5 * model.time - 1.5))), shape ]
+
+            else
+                shape

@@ -8628,7 +8628,7 @@ var author$project$ArcCreator$init = {
 	x: 5,
 	y: 0
 };
-var author$project$Main$ShapeCreator = {$: 'ShapeCreator'};
+var author$project$Main$SinCreator = {$: 'SinCreator'};
 var author$project$PolygonCreator$Filled = {$: 'Filled'};
 var author$project$PolygonCreator$No = {$: 'No'};
 var author$project$PolygonCreator$None = {$: 'None'};
@@ -8758,6 +8758,15 @@ var author$project$SinCreator$init = {
 	gFun: author$project$SinCreator$VFun,
 	gScale: 1,
 	gTransp: 0.25,
+	hasEditableXSin: false,
+	hasMakeTransparent: false,
+	hasMoveCircle: false,
+	hasMoveX: false,
+	hasMoveY: false,
+	hasScaleU: false,
+	hasScaleX: false,
+	hasScaleY: false,
+	hasURotate: false,
 	latestPointV: _Utils_Tuple3(
 		0,
 		0,
@@ -8856,7 +8865,7 @@ var author$project$TriCreator$init = {
 	x: 0,
 	y: 0
 };
-var author$project$Main$init = {currentPage: 1, fiveSat: 0, fourSat: 0, model1: author$project$ShapeCreator$init, model2: author$project$TriCreator$init, model3: author$project$PolygonCreator$init, model4: author$project$ArcCreator$init, model5: author$project$SinCreator$init, model6: author$project$TextCreator$init, oneSat: 1, page: author$project$Main$ShapeCreator, sixSat: 0, threeSat: 0, twoSat: 0};
+var author$project$Main$init = {currentPage: 1, fiveSat: 1, fourSat: 0, model1: author$project$ShapeCreator$init, model2: author$project$TriCreator$init, model3: author$project$PolygonCreator$init, model4: author$project$ArcCreator$init, model5: author$project$SinCreator$init, model6: author$project$TextCreator$init, oneSat: 0, page: author$project$Main$SinCreator, sixSat: 0, threeSat: 0, twoSat: 0};
 var author$project$ArcCreator$Tick = F2(
 	function (a, b) {
 		return {$: 'Tick', a: a, b: b};
@@ -9241,7 +9250,7 @@ var author$project$ArcCreator$update = F2(
 	});
 var author$project$Main$ArcCreator = {$: 'ArcCreator'};
 var author$project$Main$PolygonCreator = {$: 'PolygonCreator'};
-var author$project$Main$SinCreator = {$: 'SinCreator'};
+var author$project$Main$ShapeCreator = {$: 'ShapeCreator'};
 var author$project$Main$TextCreator = {$: 'TextCreator'};
 var author$project$Main$TriCreator = {$: 'TriCreator'};
 var author$project$PolygonCreator$Tick = F2(
@@ -10140,6 +10149,13 @@ var author$project$SinCreator$Tick = F2(
 	function (a, b) {
 		return {$: 'Tick', a: a, b: b};
 	});
+var author$project$SinCreator$EditableXSin = {$: 'EditableXSin'};
+var author$project$SinCreator$MakeTransparent = {$: 'MakeTransparent'};
+var author$project$SinCreator$MoveCircle = {$: 'MoveCircle'};
+var author$project$SinCreator$MoveX = {$: 'MoveX'};
+var author$project$SinCreator$MoveY = {$: 'MoveY'};
+var author$project$SinCreator$ScaleX = {$: 'ScaleX'};
+var author$project$SinCreator$ScaleY = {$: 'ScaleY'};
 var author$project$SinCreator$curveX = function (x) {
 	return elm$core$Basics$round(
 		A3(
@@ -10158,36 +10174,7 @@ var author$project$SinCreator$cycleFun = function (f) {
 			return author$project$SinCreator$OneFun;
 	}
 };
-var author$project$SinCreator$EditableXSin = {$: 'EditableXSin'};
-var author$project$SinCreator$MakeTransparent = {$: 'MakeTransparent'};
-var author$project$SinCreator$MoveCircle = {$: 'MoveCircle'};
-var author$project$SinCreator$MoveX = {$: 'MoveX'};
-var author$project$SinCreator$MoveY = {$: 'MoveY'};
-var author$project$SinCreator$ScaleX = {$: 'ScaleX'};
-var author$project$SinCreator$ScaleY = {$: 'ScaleY'};
 var author$project$SinCreator$URotate = {$: 'URotate'};
-var author$project$SinCreator$cycleTransforms = function (tr) {
-	switch (tr.$) {
-		case 'ScaleU':
-			return author$project$SinCreator$URotate;
-		case 'URotate':
-			return author$project$SinCreator$ScaleX;
-		case 'ScaleX':
-			return author$project$SinCreator$ScaleY;
-		case 'ScaleY':
-			return author$project$SinCreator$MakeTransparent;
-		case 'MakeTransparent':
-			return author$project$SinCreator$MoveX;
-		case 'MoveX':
-			return author$project$SinCreator$MoveY;
-		case 'MoveY':
-			return author$project$SinCreator$MoveCircle;
-		case 'MoveCircle':
-			return author$project$SinCreator$EditableXSin;
-		default:
-			return author$project$SinCreator$ScaleU;
-	}
-};
 var author$project$SinCreator$cycleTransformsReverse = function (tr) {
 	switch (tr.$) {
 		case 'URotate':
@@ -10606,10 +10593,11 @@ var author$project$SinCreator$update = F2(
 						trigCycleV: author$project$SinCreator$cycleTrig(model.trigCycleV)
 					});
 			case 'UTransforms':
+				var tap = msg.a;
 				return _Utils_update(
 					model,
 					{
-						uTransform: author$project$SinCreator$cycleTransforms(model.uTransform)
+						uTransform: (tap.b > 0) ? author$project$SinCreator$ScaleU : ((_Utils_cmp(tap.b, -20) > 0) ? author$project$SinCreator$ScaleX : ((_Utils_cmp(tap.b, -40) > 0) ? author$project$SinCreator$ScaleY : ((_Utils_cmp(tap.b, -60) > 0) ? author$project$SinCreator$MoveX : ((_Utils_cmp(tap.b, -80) > 0) ? author$project$SinCreator$MoveY : ((_Utils_cmp(tap.b, -100) > 0) ? author$project$SinCreator$MoveCircle : ((_Utils_cmp(tap.b, -120) > 0) ? author$project$SinCreator$MakeTransparent : ((_Utils_cmp(tap.b, -140) > 0) ? author$project$SinCreator$EditableXSin : model.uTransform)))))))
 					});
 			case 'UTransformsReverse':
 				return _Utils_update(
@@ -10617,6 +10605,54 @@ var author$project$SinCreator$update = F2(
 					{
 						uTransform: author$project$SinCreator$cycleTransformsReverse(model.uTransform)
 					});
+			case 'Toggle':
+				switch (msg.a.$) {
+					case 'MoveX':
+						var _n15 = msg.a;
+						return _Utils_update(
+							model,
+							{hasMoveX: !model.hasMoveX});
+					case 'MoveY':
+						var _n16 = msg.a;
+						return _Utils_update(
+							model,
+							{hasMoveY: !model.hasMoveY});
+					case 'URotate':
+						var _n17 = msg.a;
+						return _Utils_update(
+							model,
+							{hasURotate: !model.hasURotate});
+					case 'ScaleU':
+						var _n18 = msg.a;
+						return _Utils_update(
+							model,
+							{hasScaleU: !model.hasScaleU});
+					case 'ScaleX':
+						var _n19 = msg.a;
+						return _Utils_update(
+							model,
+							{hasScaleX: !model.hasScaleX});
+					case 'ScaleY':
+						var _n20 = msg.a;
+						return _Utils_update(
+							model,
+							{hasScaleY: !model.hasScaleY});
+					case 'MakeTransparent':
+						var _n21 = msg.a;
+						return _Utils_update(
+							model,
+							{hasMakeTransparent: !model.hasMakeTransparent});
+					case 'MoveCircle':
+						var _n22 = msg.a;
+						return _Utils_update(
+							model,
+							{hasMoveCircle: !model.hasMoveCircle});
+					default:
+						var _n23 = msg.a;
+						return _Utils_update(
+							model,
+							{hasEditableXSin: !model.hasEditableXSin});
+				}
 			case 'ButtonDown':
 				var dir = msg.a;
 				return _Utils_update(
@@ -18631,6 +18667,10 @@ var author$project$ShapeCreator$view = function (model) {
 			author$project$ShapeCreator$yourCode(model))
 		]);
 };
+var MacCASOutreach$graphicsvg$GraphicSVG$notifyTapAt = F2(
+	function (msg, shape) {
+		return A2(MacCASOutreach$graphicsvg$GraphicSVG$TapAt, msg, shape);
+	});
 var author$project$SinCreator$AmplitudeDown = {$: 'AmplitudeDown'};
 var author$project$SinCreator$AmplitudeUp = {$: 'AmplitudeUp'};
 var author$project$SinCreator$B = {$: 'B'};
@@ -18664,8 +18704,9 @@ var author$project$SinCreator$UScaleMinus = {$: 'UScaleMinus'};
 var author$project$SinCreator$UScalePlus = {$: 'UScalePlus'};
 var author$project$SinCreator$UShiftMinus = {$: 'UShiftMinus'};
 var author$project$SinCreator$UShiftPlus = {$: 'UShiftPlus'};
-var author$project$SinCreator$UTransforms = {$: 'UTransforms'};
-var author$project$SinCreator$UTransformsReverse = {$: 'UTransformsReverse'};
+var author$project$SinCreator$UTransforms = function (a) {
+	return {$: 'UTransforms', a: a};
+};
 var author$project$SinCreator$applyTransforms = F2(
 	function (tr, model) {
 		var u = model.u;
@@ -19014,112 +19055,79 @@ var author$project$SinCreator$view = function (model) {
 					MacCASOutreach$graphicsvg$GraphicSVG$serif(
 						MacCASOutreach$graphicsvg$GraphicSVG$text(str)))));
 	};
-	var transformsGraphicsGroup = MacCASOutreach$graphicsvg$GraphicSVG$group(
-		_List_fromArray(
-			[
-				A2(
-				MacCASOutreach$graphicsvg$GraphicSVG$move,
-				_Utils_Tuple2(45, 70),
-				A2(
-					MacCASOutreach$graphicsvg$GraphicSVG$makeTransparent,
-					0.25,
+	var transformsGraphicsWithButtonGroup = function (model2) {
+		return MacCASOutreach$graphicsvg$GraphicSVG$group(
+			_List_fromArray(
+				[
+					A2(
+					MacCASOutreach$graphicsvg$GraphicSVG$move,
+					_Utils_Tuple2(25, 60),
+					A2(
+						MacCASOutreach$graphicsvg$GraphicSVG$makeTransparent,
+						0.25,
+						A3(
+							MacCASOutreach$graphicsvg$GraphicSVG$outlined,
+							MacCASOutreach$graphicsvg$GraphicSVG$solid(1),
+							MacCASOutreach$graphicsvg$GraphicSVG$red,
+							A2(MacCASOutreach$graphicsvg$GraphicSVG$rect, 210, 200)))),
+					A2(
+					MacCASOutreach$graphicsvg$GraphicSVG$move,
+					_Utils_Tuple2(140, 150),
+					A2(
+						MacCASOutreach$graphicsvg$GraphicSVG$filled,
+						author$project$SinCreator$titleColour,
+						A2(
+							MacCASOutreach$graphicsvg$GraphicSVG$size,
+							10,
+							MacCASOutreach$graphicsvg$GraphicSVG$italic(
+								MacCASOutreach$graphicsvg$GraphicSVG$serif(
+									MacCASOutreach$graphicsvg$GraphicSVG$text('Click to apply transforms')))))),
+					A2(
+					MacCASOutreach$graphicsvg$GraphicSVG$move,
+					_Utils_Tuple2(25, 60),
 					A3(
-						MacCASOutreach$graphicsvg$GraphicSVG$outlined,
-						MacCASOutreach$graphicsvg$GraphicSVG$solid(1),
-						MacCASOutreach$graphicsvg$GraphicSVG$red,
-						A2(MacCASOutreach$graphicsvg$GraphicSVG$rect, 210, 200)))),
-				A2(
-				MacCASOutreach$graphicsvg$GraphicSVG$move,
-				_Utils_Tuple2(45, 60),
-				A3(
-					author$project$SinCreator$applyTransforms,
-					model.uTransform,
-					model,
+						author$project$SinCreator$applyTransforms,
+						model.uTransform,
+						model,
+						A3(
+							MacCASOutreach$graphicsvg$GraphicSVG$outlined,
+							MacCASOutreach$graphicsvg$GraphicSVG$solid(1),
+							A3(MacCASOutreach$graphicsvg$GraphicSVG$rgb, model.r, model.g, model.b),
+							MacCASOutreach$graphicsvg$GraphicSVG$square(15)))),
+					MacCASOutreach$graphicsvg$GraphicSVG$group(
 					A3(
-						MacCASOutreach$graphicsvg$GraphicSVG$outlined,
-						MacCASOutreach$graphicsvg$GraphicSVG$solid(1),
-						A3(MacCASOutreach$graphicsvg$GraphicSVG$rgb, model.r, model.g, model.b),
-						MacCASOutreach$graphicsvg$GraphicSVG$square(15)))),
-				A2(
-				MacCASOutreach$graphicsvg$GraphicSVG$move,
-				_Utils_Tuple2(30, 50),
-				MacCASOutreach$graphicsvg$GraphicSVG$group(
-					_List_fromArray(
-						[
-							A2(
-							MacCASOutreach$graphicsvg$GraphicSVG$move,
-							_Utils_Tuple2(4, 105),
-							A2(
-								MacCASOutreach$graphicsvg$GraphicSVG$filled,
-								MacCASOutreach$graphicsvg$GraphicSVG$black,
-								A2(
-									MacCASOutreach$graphicsvg$GraphicSVG$size,
-									10,
-									MacCASOutreach$graphicsvg$GraphicSVG$text(
-										author$project$SinCreator$applyTransformsText(model.uTransform))))),
-							A2(
-							MacCASOutreach$graphicsvg$GraphicSVG$makeTransparent,
-							model.transformsLeftArrowTransp,
-							A2(
-								MacCASOutreach$graphicsvg$GraphicSVG$notifyEnter,
-								author$project$SinCreator$TransM(
-									function (m) {
-										return _Utils_update(
-											m,
-											{transformsLeftArrowTransp: 1});
-									}),
-								A2(
-									MacCASOutreach$graphicsvg$GraphicSVG$notifyLeave,
-									author$project$SinCreator$TransM(
-										function (m) {
-											return _Utils_update(
-												m,
-												{transformsLeftArrowTransp: 0.25});
-										}),
+						elm$core$List$map2,
+						F2(
+							function (ss, y) {
+								return A2(
+									MacCASOutreach$graphicsvg$GraphicSVG$move,
+									_Utils_Tuple2(-35, y),
 									A2(
 										MacCASOutreach$graphicsvg$GraphicSVG$move,
-										_Utils_Tuple2(-70, 105),
+										_Utils_Tuple2(170, 130),
 										A2(
-											MacCASOutreach$graphicsvg$GraphicSVG$notifyTap,
-											author$project$SinCreator$UTransformsReverse,
-											A2(
-												MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-												elm$core$Basics$degrees(180),
-												A2(
-													MacCASOutreach$graphicsvg$GraphicSVG$filled,
-													A3(MacCASOutreach$graphicsvg$GraphicSVG$rgb, 255, 10, 10),
-													MacCASOutreach$graphicsvg$GraphicSVG$triangle(8)))))))),
-							A2(
-							MacCASOutreach$graphicsvg$GraphicSVG$makeTransparent,
-							model.transformsRightArrowTransp,
-							A2(
-								MacCASOutreach$graphicsvg$GraphicSVG$notifyEnter,
-								author$project$SinCreator$TransM(
-									function (m) {
-										return _Utils_update(
-											m,
-											{transformsRightArrowTransp: 1});
-									}),
-								A2(
-									MacCASOutreach$graphicsvg$GraphicSVG$notifyLeave,
-									author$project$SinCreator$TransM(
-										function (m) {
-											return _Utils_update(
-												m,
-												{transformsRightArrowTransp: 0.25});
-										}),
-									A2(
-										MacCASOutreach$graphicsvg$GraphicSVG$move,
-										_Utils_Tuple2(100, 105),
-										A2(
-											MacCASOutreach$graphicsvg$GraphicSVG$notifyTap,
+											MacCASOutreach$graphicsvg$GraphicSVG$notifyTapAt,
 											author$project$SinCreator$UTransforms,
 											A2(
 												MacCASOutreach$graphicsvg$GraphicSVG$filled,
-												A3(MacCASOutreach$graphicsvg$GraphicSVG$rgb, 255, 10, 10),
-												MacCASOutreach$graphicsvg$GraphicSVG$triangle(8)))))))
-						])))
-			]));
+												MacCASOutreach$graphicsvg$GraphicSVG$black,
+												A2(
+													MacCASOutreach$graphicsvg$GraphicSVG$size,
+													10,
+													MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth(
+														MacCASOutreach$graphicsvg$GraphicSVG$text(
+															author$project$SinCreator$applyTransformsText(ss))))))));
+							}),
+						_List_fromArray(
+							[author$project$SinCreator$ScaleU, author$project$SinCreator$ScaleX, author$project$SinCreator$ScaleY, author$project$SinCreator$MoveX, author$project$SinCreator$MoveY, author$project$SinCreator$MoveCircle, author$project$SinCreator$MakeTransparent, author$project$SinCreator$EditableXSin]),
+						A2(
+							elm$core$List$map,
+							function (x) {
+								return (-20) * x;
+							},
+							A2(elm$core$List$range, 0, 20))))
+				]));
+	};
 	var titlesText = MacCASOutreach$graphicsvg$GraphicSVG$group(
 		_List_fromArray(
 			[
@@ -19473,7 +19481,7 @@ var author$project$SinCreator$view = function (model) {
 			}),
 		A2(
 			MacCASOutreach$graphicsvg$GraphicSVG$move,
-			_Utils_Tuple2(-110, -82),
+			_Utils_Tuple2(-110, -172),
 			A2(
 				MacCASOutreach$graphicsvg$GraphicSVG$rotate,
 				elm$core$Basics$degrees(90),
@@ -19482,7 +19490,7 @@ var author$project$SinCreator$view = function (model) {
 					MacCASOutreach$graphicsvg$GraphicSVG$black,
 					A2(
 						MacCASOutreach$graphicsvg$GraphicSVG$size,
-						8,
+						10,
 						MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth(
 							MacCASOutreach$graphicsvg$GraphicSVG$text(
 								elm$core$String$fromFloat(model.uScale) + ('* cos(' + author$project$SinCreator$cosinString(model)))))))));
@@ -19609,7 +19617,18 @@ var author$project$SinCreator$view = function (model) {
 			A2(
 			MacCASOutreach$graphicsvg$GraphicSVG$move,
 			_Utils_Tuple2(0, -100),
-			transformsGraphicsGroup),
+			transformsGraphicsWithButtonGroup(model)),
+			A2(
+			MacCASOutreach$graphicsvg$GraphicSVG$move,
+			_Utils_Tuple2(-240, 170),
+			A2(
+				MacCASOutreach$graphicsvg$GraphicSVG$filled,
+				author$project$SinCreator$titleColour,
+				A2(
+					MacCASOutreach$graphicsvg$GraphicSVG$size,
+					12,
+					MacCASOutreach$graphicsvg$GraphicSVG$serif(
+						MacCASOutreach$graphicsvg$GraphicSVG$text('SinCreator'))))),
 			A2(
 			MacCASOutreach$graphicsvg$GraphicSVG$move,
 			_Utils_Tuple2(-20, 15),
