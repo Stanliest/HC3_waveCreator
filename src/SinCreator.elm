@@ -29,21 +29,29 @@ Copyright 2017-2019 Christopher Kumar Anand,  Adele Olejarz, Chinmay Sheth, Yami
 
 -}
 
-{-  template for your comment
+{- 
 
-User:  Who is your imagined user
+User: High School Student
 
-Activity:  What activity is your user engaged in 
+Activity: The student is engaged in the activity of exploration and learning about the affects of Sine waves on patterns 
+on the x,y plane.
 
-Emotion:  How does your user feel about this activity
+Emotion: The user feels a sense of discovery at first sight. The user will sure be interested by seeing how a function can turn
+into sine/cosine waves and even prettier moving squres.
 
-Tasks:  What tasks are part of this activity
+Tasks: The student will manipulate the sine function on screen(change amplitude, period, phase, and forms) and see how changes in 
+variables will affect patterns of movement on the x,y plane. 
 
-Typical Interaction:  Describe a typical interaction of your user (the TAs will test this out, so include sufficient detail)
+Typical Interaction: The highschool student will manipulate the sine function at the top of the screen and use the corresponding
+buttons on the right labelled "Apply Transforms" to apply the appropriate transform to the shape. The student will use
+the transform buttons to discover what kind of impact changes to the sine wave will have on the different transforms of the model. 
 
-Principle 1:  First of Norman's principles and how it guided your design
+Principle 1: Discoverability --> we wanted to make it apparent to the user what actions / transforms can be applied to the shape
+and give them the freedom to choose exactly which one they want. 
 
-Principle 2:  Second of Norman's principles and how it guided your design.
+Principle 2: Conceptual Model --> we wanted to make the model transforms apparent and give the user total control of choice
+between which transforms to apply. Although the toggle/cycle option was great, we felt that with buttons and labels, the user
+could quickly and easily switch between the transforms of their choice without having to cycle through the other options.
 
 -}
 
